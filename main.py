@@ -1,8 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
 
-page_url = "https://www.yallakora.com/match-center/?date=10/10/2024"
-
 
 def fetch_page_content(url):
     headers = {
@@ -25,4 +23,17 @@ def fetch_page_content(url):
     return None
 
 
-fetch_page_content(page_url)
+def parse_page_content(html_content):
+    soup = BeautifulSoup(html_content, 'lxml')
+    
+    print(soup.prettify())
+
+
+if __name__ == '__main__':
+    football_page_url = "https://www.yallakora.com/match-center/?date=10/10/2024"
+    
+    # Fetching (requesting) football page
+    football_page = fetch_page_content(football_page_url)
+    
+    # Parsing (extracting) football data
+    parse_page_content(football_page)

@@ -1,5 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
+import re
 
 
 def fetch_page_content(url):
@@ -26,14 +27,49 @@ def fetch_page_content(url):
 def parse_page_content(html_content):
     soup = BeautifulSoup(html_content, 'lxml')
     
-    print(soup.prettify())
+    # Find the football-fixtures container
+    fixtures = soup.find('section', class_='matchesCenter')
+    
+    # Find all championships within the fixtures container
+    championships = fixtures.find_all('div', class_=re.compile(r'matchCard matchesList'))
+    
+    matches_list = []  # List to store all match data
+    
+    # Loop through championships to extract data for each championship
+    for championship in championships:
+        
+        # Find championship title
+        championship_title = championship.find('div', class_='title').h2.text.strip()
+        
+        # Find all matches for each championship
+        matches = championship.find_all('div', class_='allData')
+        
+        # Loop through matches and extract their details
+        for match in matches:
+            match_dic = {}  # Dictionary to store match details
+            
+            match_dic['الفريق الأول'] = match.find('div', class_='teams teamA').p.text.strip()
+            match_dic['الفريق الثاني'] = match.find('div', class_='teams teamB').p.text.strip()
+            result = match.find_all('span', class_='score')
+            match_dic['نتيجة المباراة'] = f"{result[0].text.strip()} - {result[1].text.strip()}"
+            match_dic['موعد المباراة'] = match.find('span', class_='time').text.strip()
+            match_dic['رقم الجولة'] = match.find('div', class_='date').text.strip()
+            match_dic['الحالة'] = match.find('div', class_='matchStatus').span.text.strip()
+            match_dic['البطولة'] = championship_title
+            
+            matches_list.append(match_dic)  # Append the match dictionary to the list
+    
+    return matches_list  # Returns a list of dictionaries for all matches
 
 
 if __name__ == '__main__':
-    football_page_url = "https://www.yallakora.com/match-center/?date=10/10/2024"
+    football_page_url = "https://www.yallakora.com/match-center/?date=10/12/2024"
     
     # Fetching (requesting) football page
     football_page = fetch_page_content(football_page_url)
     
     # Parsing (extracting) football data
-    parse_page_content(football_page)
+    football_data = parse_page_content(football_page)
+    
+    # Display the parsed data
+    print(football_data)

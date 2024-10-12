@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import re
+import csv
 
 
 def fetch_page_content(url):
@@ -49,17 +50,33 @@ def parse_page_content(html_content):
             match_dic = {}  # Dictionary to store match details
             
             match_dic['الفريق الأول'] = match.find('div', class_='teams teamA').p.text.strip()
-            match_dic['الفريق الثاني'] = match.find('div', class_='teams teamB').p.text.strip()
             result = match.find_all('span', class_='score')
-            match_dic['نتيجة المباراة'] = f"{result[0].text.strip()} - {result[1].text.strip()}"
+            match_dic['نتيجة المباراة'] = f"{result[1].text.strip()} - {result[0].text.strip()}"
+            match_dic['الفريق الثاني'] = match.find('div', class_='teams teamB').p.text.strip()
+            match_dic['الحالة'] = match.find('div', class_='matchStatus').span.text.strip()
             match_dic['موعد المباراة'] = match.find('span', class_='time').text.strip()
             match_dic['رقم الجولة'] = match.find('div', class_='date').text.strip()
-            match_dic['الحالة'] = match.find('div', class_='matchStatus').span.text.strip()
             match_dic['البطولة'] = championship_title
-            
+
             matches_list.append(match_dic)  # Append the match dictionary to the list
     
     return matches_list  # Returns a list of dictionaries for all matches
+
+
+def save_to_csv(data):
+    with open('football_fixtures.csv', 'w', encoding='utf-8') as f:
+        # Define the desired fieldnames for the CSV file
+        fieldnames = ['الفريق الأول', 'نتيجة المباراة', 'الفريق الثاني', 'الحالة', 'موعد المباراة', 'رقم الجولة', 'البطولة']
+        
+        # Create the CSV DictWriter object
+        csv_writer = csv.DictWriter(f, fieldnames=fieldnames)
+        
+        # Write the header row
+        csv_writer.writeheader()
+        
+        # Write each row to the CSV file
+        csv_writer.writerows(data)
+        
 
 
 if __name__ == '__main__':
@@ -71,5 +88,7 @@ if __name__ == '__main__':
     # Parsing (extracting) football data
     football_data = parse_page_content(football_page)
     
-    # Display the parsed data
-    print(football_data)
+    save_to_csv(football_data)
+    
+    
+    

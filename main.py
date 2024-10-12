@@ -79,7 +79,10 @@ def save_to_csv(data):
         
 
 def football_fixtures_scraper():
-    football_page_url = "https://www.yallakora.com/match-center/?date=10/12/2024"
+    # Get date from user
+    date = input("Please, enter the date(MM/DD/YYYY): ")
+    
+    football_page_url = f"https://www.yallakora.com/match-center/?date={date}"
     
     # Fetching (requesting) football page
     football_page = fetch_page_content(football_page_url)
@@ -88,7 +91,8 @@ def football_fixtures_scraper():
     football_data = parse_page_content(football_page)
     
     save_to_csv(football_data)
-    
-    
+    print("\nData saved to football_fixtures.csv.")
+
+
 if __name__ == '__main__':
     football_fixtures_scraper()

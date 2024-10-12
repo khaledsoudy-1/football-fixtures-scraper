@@ -5,6 +5,8 @@ import csv
 
 
 def fetch_page_content(url):
+    """Fetches the HTML content of a given URL."""
+    
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36"
     }
@@ -26,6 +28,8 @@ def fetch_page_content(url):
 
 
 def parse_page_content(html_content):
+    """Parses the HTML content to extract football match data."""
+    
     soup = BeautifulSoup(html_content, 'lxml')
     
     # Find the football-fixtures container
@@ -57,16 +61,19 @@ def parse_page_content(html_content):
             match_dic['موعد المباراة'] = match.find('span', class_='time').text.strip()
             match_dic['رقم الجولة'] = match.find('div', class_='date').text.strip()
             match_dic['البطولة'] = championship_title
-
+            
             matches_list.append(match_dic)  # Append the match dictionary to the list
     
     return matches_list  # Returns a list of dictionaries for all matches
 
 
 def save_to_csv(data):
+    """Saves match data to a CSV file."""
+    
     with open('football_fixtures.csv', 'w', encoding='utf-8') as f:
         # Define the desired fieldnames for the CSV file
-        fieldnames = ['الفريق الأول', 'نتيجة المباراة', 'الفريق الثاني', 'الحالة', 'موعد المباراة', 'رقم الجولة', 'البطولة']
+        fieldnames = ['الفريق الأول', 'نتيجة المباراة', 'الفريق الثاني', 'الحالة', 'موعد المباراة', 'رقم الجولة',
+                      'البطولة']
         
         # Create the CSV DictWriter object
         csv_writer = csv.DictWriter(f, fieldnames=fieldnames)
@@ -76,9 +83,11 @@ def save_to_csv(data):
         
         # Write each row to the CSV file
         csv_writer.writerows(data)
-        
+
 
 def football_fixtures_scraper():
+    """ Main function to scrape football fixtures based on user-provided date and save the data to a CSV file."""
+    
     # Get date from user
     date = input("Please, enter the date(MM/DD/YYYY): ")
     

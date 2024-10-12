@@ -78,8 +78,7 @@ def save_to_csv(data):
         csv_writer.writerows(data)
         
 
-
-if __name__ == '__main__':
+def football_fixtures_scraper():
     football_page_url = "https://www.yallakora.com/match-center/?date=10/12/2024"
     
     # Fetching (requesting) football page
@@ -91,4 +90,5 @@ if __name__ == '__main__':
     save_to_csv(football_data)
     
     
-    
+if __name__ == '__main__':
+    football_fixtures_scraper()
